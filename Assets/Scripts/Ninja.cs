@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,7 +7,7 @@ public enum JumpState
 {
 	GROUNDED,
 	FORWARD,
-	BACKWARD
+	KNOCKBACK
 }
 
 public class Ninja : MonoBehaviour {
@@ -25,10 +26,12 @@ public class Ninja : MonoBehaviour {
 				break;
 			case JumpState.FORWARD:
 				currentJumpPoint -= 1;
+				turnCounter.text = currentJumpPoint.ToString ();
 				break;
-			case JumpState.BACKWARD:
-				currentJumpPoint += 1;
+			case JumpState.KNOCKBACK:
+				currentJumpPoint += 2;
 				currentJumpPoint = Mathf.Clamp(currentJumpPoint, 0, jumpPointNumber - 1);
+				turnCounter.text = currentJumpPoint.ToString ();
 				break;
 			default:
 				break;
@@ -40,6 +43,8 @@ public class Ninja : MonoBehaviour {
 	public int				jumpPointNumber;
 	public int				currentJumpPoint;
 	public float			jumpSpeed;
+	private TextMesh		turnCounter;
+	private TurnController	turns;
 
 	// Use this for initialization
 
@@ -54,22 +59,30 @@ public class Ninja : MonoBehaviour {
 			temp.z = transform.position.z;
 			jumpPoints[i].position = temp;
 		}
+		turnCounter = GetComponentInChildren<TextMesh>();
+		turnCounter.text = currentJumpPoint.ToString ();
+
+		turns = GameObject.Find("TurnController").GetComponent<TurnController>();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if (Input.GetKeyDown(KeyCode.J))
+		if (turns.turn == TurnState.ENEMY)
 		{
 			jumpState = JumpState.FORWARD;
 		}
 		if (jumpState == JumpState.FORWARD)
 		{
-			ChangeJumpPoint();
+			JumpForward();
+		}
+		else if (jumpState == JumpState.KNOCKBACK)
+		{
+			Knockback();
 		}
 	}
 
-	void ChangeJumpPoint()
+	void JumpForward()
 	{
 		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * Time.deltaTime);
 		if (transform.position == jumpPoints[currentJumpPoint].position)
@@ -78,18 +91,39 @@ public class Ninja : MonoBehaviour {
 		}
 	}
 
+	void Knockback()
+	{
+		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * Time.deltaTime);
+		if (transform.position == jumpPoints[currentJumpPoint].position)
+		{
+			jumpState = JumpState.GROUNDED;
+			turns.turn = TurnState.ENEMY;
+		}
+	}
+
+
+
 	void OnTriggerEnter2D (Collider2D coll)
 	{
-		if (coll.gameObject.tag == "Foot")
+		if (coll.gameObject.tag == "Foot" && coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING)
 		{
 			Foot foot = coll.gameObject.GetComponent<Foot>();
 			Rigidbody2D footRB = coll.gameObject.GetComponent<Rigidbody2D>();
 
-			if ((foot.attackState == AttackState.SHOOTING) 
-			    && footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f)
+			if (footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f)
 			{
-				print ("it's a hit");
+				Destroy(this.gameObject);
+			} 
+			else
+			{
+				jumpState = JumpState.KNOCKBACK;
+				turns.turn = TurnState.KNOCKBACK;
 			}
+		}
+		else if (coll.gameObject.tag == "Player")
+		{
+			jumpState = JumpState.KNOCKBACK;
+			turns.turn = TurnState.KNOCKBACK;
 		}
 	}
 }

@@ -1,11 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Foot.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Ninja.cs">
     <Files>
-      <File FileName="../Player.cs" Line="178" Column="6" />
-      <File FileName="Assets/Scripts/Foot.cs" Line="257" Column="11" />
-      <File FileName="Assets/Scripts/FootFollow.cs" Line="11" Column="16" />
-      <File FileName="Assets/Scripts/Ninja.cs" Line="24" Column="28" />
+      <File FileName="Assets/Scripts/Foot.cs" Line="239" Column="28" />
+      <File FileName="Assets/Scripts/FootFollow.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Ninja.cs" Line="68" Column="47" />
+      <File FileName="Assets/Scripts/TurnController.cs" Line="49" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -86,7 +86,8 @@ public class Foot : MonoBehaviour {
 	private Rigidbody2D	rb;
 	private Vector2 	mousePos;
 	private Vector2 	footPos;
-	
+	private TurnController	turns;	
+
 	void Awake () {
 		chargeIndicator = transform.Find ("Point").gameObject;
 	}
@@ -100,6 +101,7 @@ public class Foot : MonoBehaviour {
 		shotSpeedCurrent = shotSpeedOriginal;
 		ChargeIndicatorColor (Color.green);
 		minGrowScale = transform.localScale.x;
+		turns = GameObject.Find("TurnController").GetComponent<TurnController>();
 	}
 
 	void GetInput ()
@@ -147,7 +149,10 @@ public class Foot : MonoBehaviour {
 	{
 
 		footPos = new Vector2 (transform.position.x, transform.position.y);
-		GetInput();
+		if (turns.turn != TurnState.ENEMY)
+		{
+			GetInput();
+		}
 
 		if (attackState == AttackState.CHARGING)
 		{
@@ -231,6 +236,10 @@ public class Foot : MonoBehaviour {
 			transform.rotation = Quaternion.identity;
 			shotSpeedCurrent = shotSpeedOriginal;
 			attackState = AttackState.NORMAL;
+
+			//change to enemy's turn if there is no enemy knockback
+			if (turns.turn != TurnState.KNOCKBACK)
+				turns.EnemysTurn();
 		}
 	}
 

@@ -48,6 +48,7 @@
      <Compile Include="Assets\Scripts\Foot.cs" />
      <Compile Include="Assets\Scripts\FootFollow.cs" />
      <Compile Include="Assets\Scripts\Ninja.cs" />
+     <Compile Include="Assets\Scripts\TurnController.cs" />
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
