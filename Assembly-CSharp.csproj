@@ -6,7 +6,7 @@
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<RootNamespace></RootNamespace>
-	<ProjectGuid>{6B9A09B6-0CCC-5019-F5E7-4A8042AEA666}</ProjectGuid>
+	<ProjectGuid>{C53B74C3-C020-3163-D8E7-9AE988362B1C}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,10 +45,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\CombatController.cs" />
      <Compile Include="Assets\Scripts\Foot.cs" />
      <Compile Include="Assets\Scripts\FootFollow.cs" />
      <Compile Include="Assets\Scripts\Ninja.cs" />
-     <Compile Include="Assets\Scripts\TurnController.cs" />
+     <Compile Include="Assets\ShotPath.cs" />
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>

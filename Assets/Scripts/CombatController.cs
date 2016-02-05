@@ -5,14 +5,12 @@ using System.Collections.Generic;
 public enum TurnState
 {
 	TOMMY,
+	TOMMYEND,
 	ENEMY,
-	KNOCKBACK,
-	OVERWORLD
+	ENEMYSTART,
 }
 
-public class TurnController : MonoBehaviour {
-
-	//static public TurnController S;
+public class CombatController : MonoBehaviour {
 
 	public TurnState _turn;
 	public TurnState turn
@@ -26,11 +24,11 @@ public class TurnController : MonoBehaviour {
 			{
 			case TurnState.TOMMY:
 				break;
+			case TurnState.TOMMYEND:
+				break;
 			case TurnState.ENEMY:
 				break;
-			case TurnState.KNOCKBACK:
-				break;
-			case TurnState.OVERWORLD:
+			case TurnState.ENEMYSTART:
 				break;
 			default:
 				break;
@@ -49,9 +47,17 @@ public class TurnController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (turn == TurnState.ENEMY && NinjasDoneMoving())
+		if (turn == TurnState.TOMMYEND && NinjasDoneMoving())
+		{
+			EnemysTurn();
+		}
+		else if (turn == TurnState.ENEMY && NinjasDoneMoving())
 		{
 			TommysTurn();
+		}
+		else if (turn == TurnState.ENEMYSTART) 
+		{
+			turn = TurnState.ENEMY;
 		}
 	}
 
@@ -59,9 +65,13 @@ public class TurnController : MonoBehaviour {
 	{
 		turn = TurnState.TOMMY;
 	}
+	public void TommyEnd()
+	{
+		turn = TurnState.TOMMYEND;
+	}
 	public void EnemysTurn()
 	{
-		turn = TurnState.ENEMY;
+		turn = TurnState.ENEMYSTART;
 	}
 
 	bool NinjasDoneMoving()
@@ -75,10 +85,5 @@ public class TurnController : MonoBehaviour {
 		}
 		return true;
 	}
-
-
-
-
-
 
 }

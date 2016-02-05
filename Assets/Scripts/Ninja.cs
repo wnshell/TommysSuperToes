@@ -44,7 +44,8 @@ public class Ninja : MonoBehaviour {
 	public int				currentJumpPoint;
 	public float			jumpSpeed;
 	private TextMesh		turnCounter;
-	private TurnController	turns;
+	private CombatController combat;
+	public ParticleSystem	explosion;
 
 	// Use this for initialization
 
@@ -62,13 +63,14 @@ public class Ninja : MonoBehaviour {
 		turnCounter = GetComponentInChildren<TextMesh>();
 		turnCounter.text = currentJumpPoint.ToString ();
 
-		turns = GameObject.Find("TurnController").GetComponent<TurnController>();
+		combat = GameObject.Find("CombatController").GetComponent<CombatController>();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if (turns.turn == TurnState.ENEMY)
+
+		if (combat.turn == TurnState.ENEMYSTART)
 		{
 			jumpState = JumpState.FORWARD;
 		}
@@ -93,37 +95,35 @@ public class Ninja : MonoBehaviour {
 
 	void Knockback()
 	{
-		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * Time.deltaTime);
+		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * 2 * Time.deltaTime);
 		if (transform.position == jumpPoints[currentJumpPoint].position)
 		{
 			jumpState = JumpState.GROUNDED;
-			turns.turn = TurnState.ENEMY;
 		}
 	}
 
-
-
+	
 	void OnTriggerEnter2D (Collider2D coll)
 	{
-		if (coll.gameObject.tag == "Foot" && coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING)
+		if (jumpState == JumpState.GROUNDED &&
+		    coll.gameObject.tag == "Foot" && coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING)
 		{
 			Foot foot = coll.gameObject.GetComponent<Foot>();
 			Rigidbody2D footRB = coll.gameObject.GetComponent<Rigidbody2D>();
 
 			if (footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f)
 			{
+				Instantiate(explosion, transform.position, Quaternion.identity);
 				Destroy(this.gameObject);
 			} 
 			else
 			{
 				jumpState = JumpState.KNOCKBACK;
-				turns.turn = TurnState.KNOCKBACK;
 			}
 		}
 		else if (coll.gameObject.tag == "Player")
 		{
 			jumpState = JumpState.KNOCKBACK;
-			turns.turn = TurnState.KNOCKBACK;
 		}
 	}
 }

@@ -11,7 +11,7 @@ public class FootFollow : MonoBehaviour {
 	private bool		followingFoot = false;
 
 	void Awake () {
-		Application.targetFrameRate = 30;
+		Application.targetFrameRate = 50;
 	}
 
 	// Use this for initialization

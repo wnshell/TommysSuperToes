@@ -11,6 +11,7 @@ public enum AttackState
 {
 	CHARGING,
 	SHOOTING,
+	SLOWING,
 	RETURNING,
 	NORMAL
 }
@@ -53,9 +54,18 @@ public class Foot : MonoBehaviour {
 			case AttackState.CHARGING:
 				break;
 			case AttackState.SHOOTING:
+				shotPath.HideLine();
 				originalShotPos = footPos;
+				rb.velocity = transform.right * shotSpeedCurrent;
+				break;
+			case AttackState.SLOWING:
+				print ("slow spot: " + Vector2.Distance(originalShotPos, footPos));
+				deceleration = CalculateDeceleration();
+				print ("deceleration: " + deceleration);
 				break;
 			case AttackState.RETURNING:
+//				print (rb.velocity);
+				print ("total distance: " + Vector2.Distance(originalShotPos, footPos));
 				break;
 			default:
 				break;
@@ -70,12 +80,17 @@ public class Foot : MonoBehaviour {
 
 	//SHOOTING AND RETURNING
 	public float		maxShotDistance;
+	public float		startSlowingDistance;
 	public float		shotSpeedOriginal;
 	private float		shotSpeedCurrent;
-	public float		shotDecelRate;
-	public float		shotAccelRate;
+	public float		returnAccelRate;
 	private Vector2		originalShotPos;
 	private float		attackStrength;
+	private float		deceleration;
+
+	//AIMING
+	public GameObject	line;
+	private ShotPath	shotPath;
 
 	//GROWING
 	private float		minGrowScale;
@@ -86,7 +101,7 @@ public class Foot : MonoBehaviour {
 	private Rigidbody2D	rb;
 	private Vector2 	mousePos;
 	private Vector2 	footPos;
-	private TurnController	turns;	
+	private CombatController	combat;	
 
 	void Awake () {
 		chargeIndicator = transform.Find ("Point").gameObject;
@@ -101,7 +116,8 @@ public class Foot : MonoBehaviour {
 		shotSpeedCurrent = shotSpeedOriginal;
 		ChargeIndicatorColor (Color.green);
 		minGrowScale = transform.localScale.x;
-		turns = GameObject.Find("TurnController").GetComponent<TurnController>();
+		combat = GameObject.Find("CombatController").GetComponent<CombatController>();
+		shotPath = line.GetComponent<ShotPath>();
 	}
 
 	void GetInput ()
@@ -143,22 +159,22 @@ public class Foot : MonoBehaviour {
 		}
 
 	}
-	
+
+
 	// Update is called once per frame
-	void Update () 
+	void FixedUpdate () 
 	{
-
-		footPos = new Vector2 (transform.position.x, transform.position.y);
-		if (turns.turn != TurnState.ENEMY)
+		if (attackState == AttackState.NORMAL)
 		{
-			GetInput();
+			//do nothing
 		}
-
-		if (attackState == AttackState.CHARGING)
+		
+		else if (attackState == AttackState.CHARGING)
 		{
 			RotateFoot();
 			CalculateAttackStrength();
 			DecideChargeIndicatorColor();
+			SetShotPath();
 		}
 		else if (attackState == AttackState.SHOOTING)
 		{
@@ -168,14 +184,18 @@ public class Foot : MonoBehaviour {
 		{
 			ReturnFoot();
 		}
-
-		if (Input.GetKey(KeyCode.Space))
+		else if (attackState == AttackState.SLOWING)
 		{
-			QuickGrow();
+			SlowFoot();
 		}
-		if (Input.GetKey (KeyCode.X))
+	}
+	void Update()
+	{
+		footPos = new Vector2 (transform.position.x, transform.position.y);
+		
+		if (combat.turn == TurnState.TOMMY)
 		{
-			QuickShrink();
+			GetInput();
 		}
 	}
 
@@ -209,22 +229,38 @@ public class Foot : MonoBehaviour {
 
 	void ShootFoot() 
 	{
-		if (Vector2.Distance(footPos, originalShotPos) >= maxShotDistance * attackStrength * attackStrength)
+		if (Vector2.Distance(footPos, originalShotPos) >= attackStrength * maxShotDistance * startSlowingDistance)
 		{
-			shotSpeedCurrent = Mathf.Lerp(shotSpeedCurrent, 0, shotDecelRate * Time.deltaTime);
+			print ("How far it should go: " + maxShotDistance * attackStrength);
+			print ("Where it is slowing down " + Vector2.Distance(footPos, originalShotPos));
+			print ("attackStrength: " + attackStrength);
+			print ("slowingDistance * attackStrength: " + startSlowingDistance * attackStrength);
+			attackState = AttackState.SLOWING;
 		}
+	}
 
-		rb.velocity = transform.right * shotSpeedCurrent;
-
-		if (shotSpeedCurrent < .1f)
+	void SlowFoot()
+	{
+//		|| Vector2.Distance(footPos, originalShotPos) >= maxShotDistance * attackStrength
+		if (shotSpeedCurrent <= Mathf.Epsilon)
 		{
 			attackState = AttackState.RETURNING;
 		}
+		else
+		{
+			shotSpeedCurrent -= deceleration;
+			rb.velocity = transform.right * shotSpeedCurrent;
+		}
+	}
+
+	float CalculateDeceleration()
+	{
+		return (((shotSpeedOriginal * shotSpeedOriginal) / (2 * (maxShotDistance - Vector2.Distance(footPos, originalShotPos)) * attackStrength)) * .02f);
 	}
 
 	void ReturnFoot()
 	{
-		shotSpeedCurrent = Mathf.Lerp (shotSpeedCurrent, shotSpeedOriginal, shotAccelRate * Time.deltaTime);
+		shotSpeedCurrent = Mathf.Lerp (shotSpeedCurrent, shotSpeedOriginal * 2, returnAccelRate * Time.deltaTime);
 		rb.velocity = -transform.right * shotSpeedCurrent;
 
 		if (footPos == originalShotPos || footPos.x < originalShotPos.x)
@@ -232,14 +268,17 @@ public class Foot : MonoBehaviour {
 			Vector3 returnPosition = new Vector3(originalShotPos.x, originalShotPos.y, -1);
 			transform.position = returnPosition;
 
+			//reset velocity
 			rb.velocity = Vector2.zero;
+			//reset foot rotation
 			transform.rotation = Quaternion.identity;
+			//reset shot speed
 			shotSpeedCurrent = shotSpeedOriginal;
+			//reset Tommy to his neutral state
 			attackState = AttackState.NORMAL;
 
-			//change to enemy's turn if there is no enemy knockback
-			if (turns.turn != TurnState.KNOCKBACK)
-				turns.EnemysTurn();
+			//tell combat controller that tommy has finished his attack
+			combat.TommyEnd();
 		}
 	}
 
@@ -258,24 +297,9 @@ public class Foot : MonoBehaviour {
 		chargeIndicator.GetComponent<Renderer>().material.color = c;
 	}
 
-	void QuickGrow()
+	void SetShotPath()
 	{
-		if (transform.localScale.x < maxGrowScale)
-		{
-			Vector3 growIncrement = transform.localScale;
-			growIncrement.x = growIncrement.y = growIncrement.x + growRate;
-			transform.localScale = growIncrement;
-		}
+		shotPath.SetStartPos(transform.position);
+		shotPath.SetEndPos(transform.position + (transform.right * maxShotDistance * attackStrength));
 	}
-
-	void QuickShrink()
-	{
-		if (transform.localScale.x > minGrowScale)
-		{
-			Vector3 shrinkIncrement = transform.localScale;
-			shrinkIncrement.x = shrinkIncrement.y = shrinkIncrement.x - growRate;
-			transform.localScale = shrinkIncrement;
-		}
-	}
-
 }
