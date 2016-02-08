@@ -10,6 +10,7 @@ public enum TurnState
 	ENEMYSTART,
 }
 
+//CONTROLLS THE FLOW OF BATTLE (e.g. who's turn it is)
 public class CombatController : MonoBehaviour {
 
 	public TurnState _turn;

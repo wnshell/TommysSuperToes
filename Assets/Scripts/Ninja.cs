@@ -39,18 +39,19 @@ public class Ninja : MonoBehaviour {
 		}
 	}
 
-	public List<Transform>  jumpPoints;
-	public int				jumpPointNumber;
-	public int				currentJumpPoint;
-	public float			jumpSpeed;
-	private TextMesh		turnCounter;
-	private CombatController combat;
-	public ParticleSystem	explosion;
+	public List<Transform>  jumpPoints; //a list of empty Transforms for the ninja to jump to
+	public int				jumpPointNumber; //the total number of jump points for this ninja
+	public int				currentJumpPoint; //which jump point the ninja is currently on
+	public float			jumpSpeed; //the speed to jump between positions
+	private TextMesh		turnCounter; //the number that indicates how many spots the ninja is from Tommy
+	private CombatController combat; //the combat script that keeps track of the combat flow
+	public ParticleSystem	explosion; //the particle system that makes the ninja explode
 
 	// Use this for initialization
 
 	void Start () 
 	{
+		//initialize variables
 		jumpState = JumpState.GROUNDED;
 		jumpPointNumber = jumpPoints.Count;
 		currentJumpPoint = jumpPointNumber - 1;
@@ -84,6 +85,7 @@ public class Ninja : MonoBehaviour {
 		}
 	}
 
+	//move Ninja to next jump point
 	void JumpForward()
 	{
 		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * Time.deltaTime);
@@ -93,6 +95,7 @@ public class Ninja : MonoBehaviour {
 		}
 	}
 
+	//move ninja to a previous jump point
 	void Knockback()
 	{
 		transform.position = Vector3.MoveTowards(transform.position, jumpPoints[currentJumpPoint].position, jumpSpeed * 2 * Time.deltaTime);
@@ -102,7 +105,7 @@ public class Ninja : MonoBehaviour {
 		}
 	}
 
-	
+	//when hit by the foot or Tommy (not currently working, which is fine; easy fix)
 	void OnTriggerEnter2D (Collider2D coll)
 	{
 		if (jumpState == JumpState.GROUNDED &&
