@@ -12,7 +12,7 @@ public class MovementController : MonoBehaviour {
     Vector2 leftPos = new Vector2(-4.37f, -3);
     Vector2 rightPos = new Vector2(4.06f, -3);
 
-
+    float mapEdge = 13.5f;
 
     public GameObject background;
 
@@ -72,6 +72,8 @@ public class MovementController : MonoBehaviour {
         //the player character is static, so GoLeft() moves the background right
         Vector2 bpos = background.transform.position;
         bpos.x += speed * Time.deltaTime;
+        if (bpos.x > mapEdge)
+            bpos.x = mapEdge;
         background.transform.position = bpos;
     }
 
@@ -79,6 +81,11 @@ public class MovementController : MonoBehaviour {
     {
         Vector2 bpos = background.transform.position;
         bpos.x -= speed * Time.deltaTime;
+        if (bpos.x < -mapEdge)
+        {
+            bpos.x = -mapEdge;
+        }
+            
         background.transform.position = bpos;
     }
 
