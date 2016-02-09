@@ -11,7 +11,7 @@ public class FootFollow : MonoBehaviour {
 	private bool		followingFoot = false;
 
 	void Awake () {
-		Application.targetFrameRate = 30;
+		Application.targetFrameRate = 50;
 	}
 
 	// Use this for initialization
@@ -32,6 +32,7 @@ public class FootFollow : MonoBehaviour {
 		}
 	}
 
+	//if the foot passes the camera's center x or y axis, return true
 	void KeepFootInView()
 	{
 		if (foot.position.x >= transform.position.x || foot.position.y >= transform.position.y)
@@ -44,6 +45,7 @@ public class FootFollow : MonoBehaviour {
 			followingFoot = false;
 	}
 
+	//keep the current offset from Tommy's foot
 	void FollowFoot()
 	{
 		if (Vector3.Distance(foot.position, tommy.position) <= footToTommyDistance)
