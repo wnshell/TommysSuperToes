@@ -21,7 +21,7 @@ public class MovementController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-	
+        background.transform.position = GameManager.S.backPos;
 	}
 	
 	// Update is called once per frame
@@ -75,6 +75,7 @@ public class MovementController : MonoBehaviour {
         if (bpos.x > mapEdge)
             bpos.x = mapEdge;
         background.transform.position = bpos;
+        GameManager.S.backPos = bpos;
     }
 
     void GoRight()
@@ -87,6 +88,7 @@ public class MovementController : MonoBehaviour {
         }
             
         background.transform.position = bpos;
+        GameManager.S.backPos = bpos;
     }
 
 }
