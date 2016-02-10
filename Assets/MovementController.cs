@@ -63,7 +63,7 @@ public class MovementController : MonoBehaviour {
 
     void ButtonPressed()
     {
-        //Add Code Later
+        PlayerController.S.ButtonPressed();
     }
 
     void GoLeft()
