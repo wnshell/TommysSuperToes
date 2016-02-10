@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour {
 	
 	}
 
+    //If the player collides with an interactable object, saves it in cur
     void OnTriggerEnter2D(Collider2D coll)
     {
         if(coll.gameObject.tag == "Interact")
@@ -28,11 +29,17 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    //If you are no longer in the range of an object, remove it from cur
     void OnTriggerExit2D(Collider2D coll)
     {
-        cur = null;
+        if (coll.gameObject.tag == "Interact")
+        {
+            cur = null;
+        }
     }
 
+    //lets Cur know that the button was pushed
+    //Dosen't do anything if cur == null, i.e. you are not near an object
     public void ButtonPressed()
     {
         if (cur == null)

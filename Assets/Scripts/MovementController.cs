@@ -61,20 +61,24 @@ public class MovementController : MonoBehaviour {
         mousePos = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
     }
 
+
+    //Let's the playerController know the button was pressed
     void ButtonPressed()
     {
         PlayerController.S.ButtonPressed();
     }
 
+    //updates the background object's position
+    //the player character is static, so GoLeft() moves the background right
     void GoLeft()
     {
-        //updates the background object's position
-        //the player character is static, so GoLeft() moves the background right
         Vector2 bpos = background.transform.position;
         bpos.x += speed * Time.deltaTime;
         if (bpos.x > mapEdge)
             bpos.x = mapEdge;
         background.transform.position = bpos;
+
+        //updates the gameManager to current position
         GameManager.S.backPos = bpos;
     }
 

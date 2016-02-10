@@ -9,7 +9,10 @@ public class Launcher : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update() { 
+
+        //Need this scene and object so GameManagers don't multiply
+        //Can't start in a scene that you will later load
         Application.LoadLevel(1);
 	}
 }
