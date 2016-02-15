@@ -114,7 +114,7 @@ public class Ninja : MonoBehaviour {
 			Foot foot = coll.gameObject.GetComponent<Foot>();
 			Rigidbody2D footRB = coll.gameObject.GetComponent<Rigidbody2D>();
 
-			if (footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f)
+			if (footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f || true)
 			{
 				Instantiate(explosion, transform.position, Quaternion.identity);
 				Destroy(this.gameObject);
