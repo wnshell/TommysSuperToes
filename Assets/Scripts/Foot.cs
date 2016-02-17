@@ -201,7 +201,7 @@ public class Foot : MonoBehaviour {
 			RotateFoot();
 			CalculateAttackStrength();
 			//SetShotPath();
-			shotPath.Ricochet(transform.position, transform.right, maxShotDistance * attackStrength);
+			shotPath.Ricochet(transform.position, transform.right, (maxShotDistance * attackStrength) / 2.0f);
 		}
 		else if (attackState == AttackState.SHOOTING)
 		{

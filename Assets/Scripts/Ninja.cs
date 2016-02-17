@@ -109,15 +109,18 @@ public class Ninja : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D coll)
 	{
 		if (jumpState == JumpState.GROUNDED &&
-		    coll.gameObject.tag == "Foot" && coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING)
+		    coll.gameObject.tag == "Foot" && coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING || 
+		    coll.gameObject.GetComponent<Foot>().attackState == AttackState.SHOOTING)
 		{
+			Instantiate(explosion, transform.position, Quaternion.identity);
+			Destroy(this.gameObject);
+
 			Foot foot = coll.gameObject.GetComponent<Foot>();
 			Rigidbody2D footRB = coll.gameObject.GetComponent<Rigidbody2D>();
 
 			if (footRB.velocity.magnitude / foot.shotSpeedOriginal <= .3f || true)
 			{
-				Instantiate(explosion, transform.position, Quaternion.identity);
-				Destroy(this.gameObject);
+
 			} 
 			else
 			{

@@ -34,7 +34,7 @@ public class ShotPath : MonoBehaviour {
 	}
 	public void HideLine()
 	{
-		//SegmentCount(1);
+		SegmentCount(1);
 	}
 
 	public void Ricochet(Vector3 footPosition, Vector3 right, float length)
